@@ -1,13 +1,13 @@
-'use client'; // Păstrăm 'use client' pentru interactivitate
+'use client'; // Păstrăm 'use client' pentru validarea interactivă a câmpurilor
 
-import React from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
-// Schema de validare Zod rămâne la fel
+// 1. Schema de validare cu Zod rămâne neschimbată
 const formSchema = z.object({
   name: z.string().min(2, { message: "Numele trebuie să aibă cel puțin 2 caractere." }),
   email: z.string().email({ message: "Adresa de email este invalidă." }),
@@ -19,14 +19,24 @@ type FormSchemaType = z.infer<typeof formSchema>;
 export default function ContactPage() {
   const { 
     register, 
-    handleSubmit, 
-    formState: { errors, isSubmitting, isSubmitSuccessful },
-    reset
+    handleSubmit,
+    formState: { errors, isSubmitting },
   } = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
   });
 
-  // NU mai avem nevoie de funcția 'onSubmit' cu fetch. O vom defini direct în formular.
+  // 2. O logică simplă pentru a afișa mesajul de succes
+  // Ne uităm la URL pentru a vedea dacă Netlify ne-a redirecționat cu succes
+  const [isSuccess, setIsSuccess] = useState(false);
+  useEffect(() => {
+    // Acest cod rulează doar în browser
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      if (searchParams.get('success') === 'true') {
+        setIsSuccess(true);
+      }
+    }
+  }, []);
 
   return (
     <>
@@ -38,33 +48,21 @@ export default function ContactPage() {
             Ai un proiect în minte sau vrei o ofertă personalizată? Completează formularul de mai jos și îți voi răspunde în cel mai scurt timp.
           </p>
 
-          {isSubmitSuccessful ? (
+          {isSuccess ? (
+            // Afișăm acest bloc dacă URL-ul conține ?success=true
             <div className="bg-green-900 border border-green-700 text-green-200 px-4 py-3 rounded-lg" role="alert">
               <strong className="font-bold">Mulțumesc! </strong>
               <span className="block sm:inline">Mesajul tău a fost trimis cu succes.</span>
             </div>
           ) : (
-            // === MODIFICAREA CHEIE ESTE AICI ===
+            // 3. Acesta este formularul final, gestionat de Netlify
+            // onSubmit NU mai este folosit pentru a trimite date, ci doar pentru a declanșa validarea
             <form 
               name="contact" 
+              method="POST" 
+              action="/contact?success=true"
               data-netlify="true" 
               data-netlify-honeypot="bot-field"
-              // Folosim 'action' pentru a trimite la o pagină de succes, dar React Hook Form va prelua controlul
-              action="/?success=true"
-              onSubmit={handleSubmit(async (data) => {
-                  // Aceasta este noua logică de trimitere
-                  const formData = new FormData();
-                  formData.append('form-name', 'contact');
-                  Object.entries(data).forEach(([key, value]) => {
-                    formData.append(key, value);
-                  });
-
-                  await fetch('/', {
-                      method: 'POST',
-                      body: formData
-                  });
-                  reset();
-              })}
               className="text-left"
             >
               <input type="hidden" name="form-name" value="contact" />
@@ -74,7 +72,6 @@ export default function ContactPage() {
                 </label>
               </p>
 
-              {/* Restul câmpurilor (input, textarea) rămân exact la fel */}
               <div className="mb-6">
                 <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-300">Nume</label>
                 <input 
