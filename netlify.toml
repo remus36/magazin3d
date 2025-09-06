@@ -1,6 +1,7 @@
 [build]
   command = "npm run build"
   publish = ".next"
+  node_version = "22"  # Sau 20, în funcție de versiunea locală
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
