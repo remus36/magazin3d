@@ -1,10 +1,6 @@
 [build]
-  # Comanda care construiește site-ul
   command = "npm run build"
-  
-  # Directorul care trebuie publicat după build
   publish = ".next"
 
 [[plugins]]
-  # Specifică pachetul pentru plugin-ul Next.js
   package = "@netlify/plugin-nextjs"
