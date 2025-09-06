@@ -1,4 +1,4 @@
-'use client'; // Important! Formularele interactive necesită 'use client' în App Router
+'use client'; // Păstrăm 'use client' pentru interactivitate
 
 import React from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
@@ -7,14 +7,13 @@ import * as z from 'zod';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
-// 1. Definim schema de validare cu Zod
+// Schema de validare Zod rămâne la fel
 const formSchema = z.object({
   name: z.string().min(2, { message: "Numele trebuie să aibă cel puțin 2 caractere." }),
   email: z.string().email({ message: "Adresa de email este invalidă." }),
   message: z.string().min(10, { message: "Mesajul trebuie să aibă cel puțin 10 caractere." })
 });
 
-// TypeScript: Definim tipul de date pe baza schemei
 type FormSchemaType = z.infer<typeof formSchema>;
 
 export default function ContactPage() {
@@ -27,24 +26,7 @@ export default function ContactPage() {
     resolver: zodResolver(formSchema),
   });
 
-  // 2. Funcția care se ocupă de trimiterea datelor
-  const onSubmit: SubmitHandler<FormSchemaType> = async (data) => {
-    // Netlify Forms funcționează prin a găsi un formular în HTML-ul static.
-    // Trebuie să trimitem datele într-un format special (x-www-form-urlencoded).
-    const formData = new URLSearchParams();
-    formData.append('form-name', 'contact'); // Numele formularului pe care îl vom defini în HTML
-    Object.entries(data).forEach(([key, value]) => {
-      formData.append(key, value);
-    });
-
-    await fetch('/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: formData.toString(),
-    });
-    
-    reset(); // Golește formularul după trimiterea cu succes
-  };
+  // NU mai avem nevoie de funcția 'onSubmit' cu fetch. O vom defini direct în formular.
 
   return (
     <>
@@ -62,16 +44,29 @@ export default function ContactPage() {
               <span className="block sm:inline">Mesajul tău a fost trimis cu succes.</span>
             </div>
           ) : (
-            // 3. Aici definim formularul pentru Netlify
+            // === MODIFICAREA CHEIE ESTE AICI ===
             <form 
               name="contact" 
-              method="POST" 
               data-netlify="true" 
               data-netlify-honeypot="bot-field"
-              onSubmit={handleSubmit(onSubmit)}
+              // Folosim 'action' pentru a trimite la o pagină de succes, dar React Hook Form va prelua controlul
+              action="/?success=true"
+              onSubmit={handleSubmit(async (data) => {
+                  // Aceasta este noua logică de trimitere
+                  const formData = new FormData();
+                  formData.append('form-name', 'contact');
+                  Object.entries(data).forEach(([key, value]) => {
+                    formData.append(key, value);
+                  });
+
+                  await fetch('/', {
+                      method: 'POST',
+                      body: formData
+                  });
+                  reset();
+              })}
               className="text-left"
             >
-              {/* Câmp ascuns necesar pentru Netlify */}
               <input type="hidden" name="form-name" value="contact" />
               <p className="hidden">
                 <label>
@@ -79,6 +74,7 @@ export default function ContactPage() {
                 </label>
               </p>
 
+              {/* Restul câmpurilor (input, textarea) rămân exact la fel */}
               <div className="mb-6">
                 <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-300">Nume</label>
                 <input 

@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
-// 1. Importă noua componentă
-import NetlifyForm from "@/components/NetlifyForm";
+
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,9 +19,7 @@ export default function RootLayout({
   return (
     <html lang="ro">
       <body className={inter.className}>
-        {/* 2. Adaugă formularul ascuns aici. 
-            Nu va fi vizibil pe site, dar va fi în codul sursă. */}
-        <NetlifyForm />
+        
         
         {/* Aici vine restul site-ului tău */}
         {children}
