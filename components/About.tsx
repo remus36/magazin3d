@@ -1,9 +1,17 @@
+import Image from "next/image";
+
 export default function About() {
   return (
     <section id="about" className="py-20 bg-gray-800">
       <div className="container mx-auto px-6 flex flex-col md:flex-row items-center gap-12">
         <div className="md:w-1/3">
-          <img src="/images/remus.jpg" alt="Your Name" className="rounded-full shadow-lg mx-auto" />
+          <Image
+            src="https://placehold.co/500x500/1E293B/FFFFFF?text=Fotografia+Ta" 
+            alt="Your Name" 
+            width={500} 
+            height={500}
+            className="rounded-full shadow-lg mx-auto" 
+          />
         </div>
         <div className="md:w-2/3 text-center md:text-left">
           <h2 className="text-4xl font-bold text-cyan-400">Despre Mine</h2>

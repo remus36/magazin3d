@@ -18,12 +18,12 @@ async function getAllProjects(): Promise<Project[]> {
 
     if (entries.items) {
       return entries.items.map(item => {
-        const fields = item.fields as any;
-        const imageAsset = fields.imaginePrincipala as any;
+        const fields = item.fields;
+        const imageAsset = fields.imaginePrincipala as { fields: { file: { url: string } } };
         return {
           id: item.sys.id,
-          title: fields.titlu || 'Titlu proiect lipsă',
-          description: fields.descriere || 'Descriere lipsă.',
+          title: String(fields.titlu || 'Titlu proiect lipsă'), // Convertește explicit la String
+          description: String(fields.descriere || 'Descriere lipsă.'), // Convertește explicit la String
           imageUrl: imageAsset?.fields?.file?.url ? `https:${imageAsset.fields.file.url}` : 'https://placehold.co/600x400/?text=Fara+Imagine',
         };
       });

@@ -19,17 +19,17 @@ async function getProductsFromContentful(): Promise<Product[]> {
 
     if (entries.items) {
       return entries.items.map(item => {
-        const fields = item.fields as any;
-        const imageAsset = fields.imagine as any; // 'imagine' este numele câmpului de imagine
+         const fields = item.fields;
+         const imageAsset = fields.imagine as { fields: { file: { url: string } } };
 
         // Construim un obiect curat pentru fiecare produs
         return {
           id: item.sys.id,
-          name: fields.nume || 'Nume produs lipsă',
-          price: fields.pret || 'Preț indisponibil',
+          name: String(fields.nume || 'Nume produs lipsă'), // Convertește explicit la String
+          price: String(fields.pret || 'Preț indisponibil'), // Convertește explicit la String
           imgUrl: imageAsset?.fields?.file?.url 
-            ? `https:${imageAsset.fields.file.url}` 
-            : 'https://placehold.co/400x400/?text=Fara+Imagine',
+        ? `https:${imageAsset.fields.file.url}` 
+        : 'https://placehold.co/400x400/?text=Fara+Imagine',
         };
       });
     }

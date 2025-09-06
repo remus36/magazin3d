@@ -4,7 +4,7 @@ import Portfolio from "@/components/Portfolio";
 import Shop from "@/components/Shop";
 import About from "@/components/About";
 import Process from "@/components/Process";
-import Testimonials from "@/components/Testimonials";
+// import Testimonials from "@/components/Testimonials";
 import ContactCTA from "@/components/ContactCTA";
 import Footer from "@/components/Footer";
 
