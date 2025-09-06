@@ -12,6 +12,10 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+       {
+        protocol: 'https',
+        hostname: 'images.ctfassets.net',
+      },
     ],
   },
   // Aici se termină modificarea

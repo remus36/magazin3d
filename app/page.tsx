@@ -20,7 +20,7 @@ export default function HomePage() {
         <Shop />
         <About />
         <Process />
-        <Testimonials />
+       
         <ContactCTA />
       </main>
       <Footer />
