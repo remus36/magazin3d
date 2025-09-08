@@ -1,11 +1,20 @@
 import { createClient } from 'contentful';
+import getConfig from 'next/config';
 
-// Asigură-te că variabilele de mediu există
-if (!process.env.CONTENTFUL_SPACE_ID || !process.env.CONTENTFUL_ACCESS_TOKEN) {
-  throw new Error("Variabilele de mediu Contentful nu sunt definite!");
+// 1. Preluăm configurarea publică din Next.js
+const { publicRuntimeConfig } = getConfig();
+
+// 2. Extragem variabilele de acolo
+const spaceId = publicRuntimeConfig.contentfulSpaceId;
+const accessToken = publicRuntimeConfig.contentfulAccessToken;
+
+// 3. Verificăm dacă există
+if (!spaceId || !accessToken) {
+  throw new Error("Eroare: Variabilele de mediu pentru Contentful (SPACE_ID și ACCESS_TOKEN) nu sunt definite în next.config.js!");
 }
 
+// 4. Creăm clientul folosind aceste variabile
 export const contentfulClient = createClient({
-  space: process.env.CONTENTFUL_SPACE_ID,
-  accessToken: process.env.CONTENTFUL_ACCESS_TOKEN,
+  space: spaceId,
+  accessToken: accessToken,
 });

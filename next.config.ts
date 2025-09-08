@@ -1,24 +1,26 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+import type { NextConfig } from 'next'
 
- 
+const config: NextConfig = {
+  // Adăugăm această secțiune nouă
+  publicRuntimeConfig: {
+    contentfulSpaceId: process.env.CONTENTFUL_SPACE_ID,
+    contentfulAccessToken: process.env.CONTENTFUL_ACCESS_TOKEN,
+  },
+  
+  // Restul configurării rămâne la fel
   output: 'standalone',
-  // Aici începe modificarea
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
+        protocol: 'https' as const,
         hostname: 'placehold.co',
-        port: '',
-        pathname: '/**',
       },
-       {
-        protocol: 'https',
+      {
+        protocol: 'https' as const,
         hostname: 'images.ctfassets.net',
       },
     ],
   },
-  // Aici se termină modificarea
-};
+}
 
-export default nextConfig;
+export default config
