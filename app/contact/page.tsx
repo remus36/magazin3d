@@ -1,71 +1,87 @@
-'use client';
+// in app/contact/page.tsx
 
-import React, { useState } from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-// 1. Importăm Server Action
-import { submitContactForm } from './actions';
+import { Metadata } from 'next';
 
-// Schema Zod rămâne la fel...
-const formSchema = z.object({ /* ... */ });
-type FormSchemaType = z.infer<typeof formSchema>;
+export const metadata: Metadata = {
+  title: 'Contact - PixelForge 3D',
+  description: 'Contactează-ne pentru proiecte personalizate sau întrebări.',
+};
 
 export default function ContactPage() {
-  const { 
-    register, 
-    handleSubmit, 
-    formState: { errors, isSubmitting },
-    reset
-  } = useForm<FormSchemaType>({
-    resolver: zodResolver(formSchema),
-  });
-
-  const [formSuccess, setFormSuccess] = useState(false);
-  const [formError, setFormError] = useState('');
-
-  // 2. Noua funcție onSubmit care apelează Server Action
-  const onSubmit: SubmitHandler<FormSchemaType> = async (data) => {
-    setFormError(''); // Resetăm eroarea
-    const result = await submitContactForm(data);
-
-    if (result.success) {
-      setFormSuccess(true);
-      reset();
-    } else {
-      setFormError(result.error || "A apărut o eroare necunoscută.");
-    }
-  };
-
   return (
-    <>
-      <Header />
-      <main className="bg-gray-900 py-20">
-        <div className="container mx-auto px-6 max-w-2xl text-center">
-          {/* ... titlul și paragraful ... */}
+    <div className="container mx-auto px-6 py-20">
+      <h1 className="text-5xl font-bold text-center mb-4">Contactează-mă</h1>
+      <p className="text-xl text-center text-gray-400 mb-12 max-w-2xl mx-auto">
+        Ai o întrebare sau vrei să începi un proiect nou? Completează formularul de mai jos și îți voi răspunde în cel mai scurt timp.
+      </p>
 
-          {formSuccess ? (
-            <div className="bg-green-900 ...">
-              Mesajul a fost trimis cu succes.
-            </div>
-          ) : (
-            // 3. Formularul curat, fără atribute Netlify
-            <form onSubmit={handleSubmit(onSubmit)} className="text-left">
-              {/* Restul câmpurilor (input, textarea) rămân la fel */}
-              {/* ... */}
-              
-              {formError && <p className="text-red-500 text-center mt-4">{formError}</p>}
-              
-              <button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Se trimite..." : "Trimite Mesajul"}
-              </button>
-            </form>
-          )}
+      {/* Aici începe formularul real, detectabil de Netlify */}
+      <form 
+        name="contact" 
+        method="POST" 
+        data-netlify="true" 
+        data-netlify-honeypot="bot-field"
+        className="max-w-xl mx-auto"
+      >
+        {/* Input necesar pentru Netlify să știe ce formular este trimis */}
+        <input type="hidden" name="form-name" value="contact" />
+        
+        {/* Câmp "honeypot" pentru a prinde boții. Trebuie să fie ascuns. */}
+        <p className="hidden">
+          <label>
+            Nu completa acest câmp dacă ești om: <input name="bot-field" />
+          </label>
+        </p>
+
+        {/* Câmpul pentru Nume */}
+        <div className="mb-6">
+          <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-300">Numele tău</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            required
+            className="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 block w-full p-2.5"
+            placeholder="ex: Andrei Popescu"
+          />
         </div>
-      </main>
-      <Footer />
-    </>
+
+        {/* Câmpul pentru Email */}
+        <div className="mb-6">
+          <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-300">Adresa de email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            className="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 block w-full p-2.5"
+            placeholder="ex: andrei.popescu@email.com"
+          />
+        </div>
+
+        {/* Câmpul pentru Mesaj */}
+        <div className="mb-6">
+          <label htmlFor="message" className="block mb-2 text-sm font-medium text-gray-300">Mesajul tău</label>
+          <textarea
+            id="message"
+            name="message"
+            rows={6}
+            required
+            className="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 block w-full p-2.5"
+            placeholder="Descrie aici proiectul tău sau întrebarea pe care o ai..."
+          ></textarea>
+        </div>
+
+        {/* Butonul de Trimitere */}
+        <div className="text-center">
+          <button 
+            type="submit"
+            className="bg-cyan-500 text-white font-bold py-3 px-10 rounded-md hover:bg-cyan-600 transition-transform transform hover:scale-105"
+          >
+            Trimite Mesajul
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }

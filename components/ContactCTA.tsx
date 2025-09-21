@@ -1,4 +1,6 @@
-import Link from 'next/link'; // Adaugă importul
+// in components/ContactCTA.tsx - ACEST COD ESTE CORECT
+
+import Link from 'next/link';
 
 export default function ContactCTA() {
   return (
@@ -9,9 +11,8 @@ export default function ContactCTA() {
           Sunt aici să te ajut să o transformi în realitate. Contactează-mă pentru o ofertă personalizată folosind pagina de contact.
         </p>
         <div className="mt-8">
-          {/* Folosim Link în loc de <a> */}
           <Link
-            href="/contact"
+            href="/contact" // Trimite la noua pagină app/contact/page.tsx
             className="bg-white text-cyan-700 font-bold py-3 px-10 rounded-md hover:bg-gray-200 transition-transform transform hover:scale-105 shadow-lg"
           >
             Mergi la Pagina de Contact

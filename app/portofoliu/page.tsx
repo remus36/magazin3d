@@ -1,7 +1,6 @@
 import Image from 'next/image';
-import { contentfulClient } from '@/lib/contentfulClient';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import { client } from '@/lib/contentfulClient'; // Importăm clientul nostru
+
 
 // Definirea tipului pentru proiect
 type Project = {
@@ -14,7 +13,7 @@ type Project = {
 // Funcție care preia TOATE proiectele
 async function getAllProjects(): Promise<Project[]> {
   try {
-    const entries = await contentfulClient.getEntries({ content_type: 'proiectPortofoliu' });
+    const entries = await client.getEntries({ content_type: 'proiectPortofoliu' });
 
     if (entries.items) {
       return entries.items.map(item => {
@@ -41,7 +40,7 @@ export default async function PortofoliuPage() {
 
   return (
     <>
-      <Header />
+  
       <main className="bg-gray-900 py-20">
         <div className="container mx-auto px-6">
           <h1 className="text-4xl font-bold text-center mb-4 text-white">Portofoliu de Proiecte</h1>
@@ -54,10 +53,10 @@ export default async function PortofoliuPage() {
               {projects.map((p) => (
                 <div key={p.id} className="bg-gray-800 rounded-lg overflow-hidden group">
                   <div className="relative w-full h-80">
-                    <Image
-                      src={p.imageUrl}
-                      alt={p.title}
-                      fill
+                     <Image
+                        src={p.imageUrl}
+                        alt={p.title}
+                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       className="object-cover group-hover:scale-105 transition-transform duration-300"
                     />
@@ -72,7 +71,7 @@ export default async function PortofoliuPage() {
           )}
         </div>
       </main>
-      <Footer />
+  
     </>
   );
 }

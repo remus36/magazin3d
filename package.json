@@ -17,6 +17,9 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hook-form": "^7.62.0",
+    "react-hot-toast": "^2.6.0",
+    "stripe": "^18.5.0",
+    "use-shopping-cart": "^3.2.0",
     "zod": "^4.1.5"
   },
   "devDependencies": {

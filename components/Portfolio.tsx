@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { contentfulClient } from '@/lib/contentfulClient';
+import { client } from '@/lib/contentfulClient';
 
 type Project = {
   id: string;
@@ -11,7 +11,7 @@ type Project = {
 
 async function getFeaturedProjects(): Promise<Project[]> {
     try {
-        const entries = await contentfulClient.getEntries({ 
+        const entries = await client.getEntries({ 
             content_type: 'proiectPortofoliu',
             limit: 3,
             order: ['-sys.createdAt']

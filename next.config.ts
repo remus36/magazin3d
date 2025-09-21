@@ -3,8 +3,8 @@ import type { NextConfig } from 'next'
 const config: NextConfig = {
   // Adăugăm această secțiune nouă
   publicRuntimeConfig: {
-    contentfulSpaceId: process.env.CONTENTFUL_SPACE_ID,
-    contentfulAccessToken: process.env.CONTENTFUL_ACCESS_TOKEN,
+    contentfulSpaceId: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
+    contentfulAccessToken: process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN,
   },
   
   // Restul configurării rămâne la fel

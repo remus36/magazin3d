@@ -1,6 +1,6 @@
 import Image from 'next/image';
 // Importăm clientul de conectare pe care tocmai l-am creat
-import { contentfulClient } from '@/lib/contentfulClient';
+import { client } from '@/lib/contentfulClient';
 import Link from 'next/link';
 
 // Definirea unui tip TypeScript pentru produs ne ajută să evităm greșeli
@@ -15,7 +15,7 @@ type Product = {
 async function getProductsFromContentful(): Promise<Product[]> {
   try {
     // Cerem toate intrările de tip 'produs' (acesta este API Identifier-ul modelului tău)
-    const entries = await contentfulClient.getEntries({ content_type: 'produs',limit:4 });
+    const entries = await client.getEntries({ content_type: 'produs',limit:4 });
 
     if (entries.items) {
       return entries.items.map(item => {
