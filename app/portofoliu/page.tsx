@@ -1,77 +1,86 @@
-import Image from 'next/image';
-import { client } from '@/lib/contentfulClient'; // Importăm clientul nostru
+// in app/portofoliu/page.tsx
 
+import { Metadata } from 'next';
+import Image from 'next/image'; // Probabil vei avea nevoie de Image
+import Link from 'next/link';   // Și de Link pentru a naviga la detalii
+import { client, urlFor } from '@/lib/sanityClient';
+import { SimplifiedProject } from '@/types'; // Importă tipul pentru proiect
 
-// Definirea tipului pentru proiect
-type Project = {
-  id: string;
-  title: string;
-  description: string;
-  imageUrl: string;
+export const metadata: Metadata = {
+  title: 'Portofoliu - PixelForge 3D',
+  description: 'O selecție a celor mai bune proiecte de modelare 3D.',
 };
 
-// Funcție care preia TOATE proiectele
-async function getAllProjects(): Promise<Project[]> {
-  try {
-    const entries = await client.getEntries({ content_type: 'proiectPortofoliu' });
+// Funcție nouă pentru a prelua proiectele din Sanity
+async function getProjects(): Promise<SimplifiedProject[]> {
+  const query = `*[_type == "project"]{
+    _id,
+    titlu,
+    "slug": slug.current,
+    descriereScurta,
+    "imagineProiect": imagineProiect
+  }`;
 
-    if (entries.items) {
-      return entries.items.map(item => {
-        const fields = item.fields;
-        const imageAsset = fields.imaginePrincipala as { fields: { file: { url: string } } };
-        return {
-          id: item.sys.id,
-          title: String(fields.titlu || 'Titlu proiect lipsă'), // Convertește explicit la String
-          description: String(fields.descriere || 'Descriere lipsă.'), // Convertește explicit la String
-          imageUrl: imageAsset?.fields?.file?.url ? `https:${imageAsset.fields.file.url}` : 'https://placehold.co/600x400/?text=Fara+Imagine',
-        };
-      });
-    }
-    return [];
+  try {
+    const sanityProjects = await client.fetch(query);
+
+    const cleanedProjects: SimplifiedProject[] = sanityProjects.map((project: any) => ({
+      id: project._id,
+      titlu: project.titlu,
+      slug: project.slug,
+      descriereScurta: project.descriereScurta,
+      imagineUrl: project.imagineProiect ? urlFor(project.imagineProiect).width(600).url() : null,
+    }));
+
+    return cleanedProjects;
   } catch (error) {
-    console.error("Eroare la preluarea proiectelor: ", error);
+    console.error("Eroare la preluarea proiectelor din Sanity:", error);
     return [];
   }
 }
 
-// Componenta pentru pagina /portofoliu
 export default async function PortofoliuPage() {
-  const projects = await getAllProjects();
+  const projects = await getProjects();
+
+  if (!projects || projects.length === 0) {
+    return (
+      <div className="container mx-auto px-6 py-20 text-center">
+        <h1 className="text-4xl font-bold">Momentan nu sunt proiecte de afișat.</h1>
+      </div>
+    );
+  }
 
   return (
-    <>
-  
-      <main className="bg-gray-900 py-20">
-        <div className="container mx-auto px-6">
-          <h1 className="text-4xl font-bold text-center mb-4 text-white">Portofoliu de Proiecte</h1>
-          <p className="text-center text-gray-400 mb-12">O selecție a celor mai bune lucrări de modelare și randare 3D.</p>
+    <div className="container mx-auto px-6 py-12">
+      <div className="text-center mb-12">
+        <h1 className="text-5xl font-extrabold">Portofoliul Meu</h1>
+        <p className="text-xl text-gray-400 mt-4 max-w-2xl mx-auto">
+          O colecție de proiecte care demonstrează pasiunea și abilitățile mele în modelarea 3D.
+        </p>
+      </div>
 
-          {projects.length === 0 ? (
-            <p className="text-center text-gray-400">Momentan nu sunt proiecte de afișat.</p>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {projects.map((p) => (
-                <div key={p.id} className="bg-gray-800 rounded-lg overflow-hidden group">
-                  <div className="relative w-full h-80">
-                     <Image
-                        src={p.imageUrl}
-                        alt={p.title}
-                       fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                  <div className="p-6">
-                    <h3 className="text-2xl font-bold text-cyan-400">{p.title}</h3>
-                    <p className="mt-2 text-gray-400">{p.description}</p>
-                  </div>
-                </div>
-              ))}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {projects.map((project: SimplifiedProject) => (
+          // Aici vom afișa cardul pentru fiecare proiect
+          <Link href={`/portofoliu/${project.slug}`} key={project.id} className="bg-gray-800 rounded-lg overflow-hidden group border border-gray-700 hover:border-cyan-500 transition-all">
+            <div className="relative w-full h-80 bg-gray-700">
+              {project.imagineUrl && (
+                <Image
+                  src={project.imagineUrl}
+                  alt={project.titlu}
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              )}
             </div>
-          )}
-        </div>
-      </main>
-  
-    </>
+            <div className="p-6">
+              <h3 className="text-2xl font-bold text-cyan-400">{project.titlu}</h3>
+              <p className="mt-2 text-gray-400">{project.descriereScurta}</p>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </div>
   );
 }

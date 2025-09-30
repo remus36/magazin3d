@@ -19,6 +19,11 @@ const config: NextConfig = {
         protocol: 'https' as const,
         hostname: 'images.ctfassets.net',
       },
+       {
+        protocol: 'https',
+        hostname: 'cdn.sanity.io', // Domeniul de unde vin imaginile Sanity
+        port: '',
+      },
     ],
   },
 }

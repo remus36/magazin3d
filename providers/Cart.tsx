@@ -7,19 +7,22 @@ export default function CartProvider({
 }: {
   children: React.ReactNode;
 }) {
-  // Preluăm URL-ul de bază din variabilele de mediu
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL as string;
 
   return (
     <USCProvider
       mode="payment"
       cartMode="client-only"
+      
+      // === LINIA ADĂUGATĂ ===
+      // Îi spunem explicit să salveze coșul în localStorage.
+      // Când un utilizator revine pe site, produsele vor fi tot în coș.
+      shouldPersist={true}
+      // =======================
+
       stripe={process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string}
-      
-      // Construim URL-urile folosind variabila de mediu, fără 'window'
       successUrl={`${siteUrl}/success`}
-      cancelUrl={`${siteUrl}/?canceled=true`}
-      
+      cancelUrl={`${siteUrl}/cancel`}
       currency="RON"
       allowedCountries={['RO']}
       billingAddressCollection={true}

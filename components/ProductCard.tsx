@@ -1,37 +1,72 @@
-"use client"; // Această componentă este interactivă
+// Fisier: components/ProductCard.tsx
+
+"use client";
 
 import Image from 'next/image';
 import { useShoppingCart } from 'use-shopping-cart';
-import { toast } from 'react-hot-toast'; // Vom instala asta imediat
+import { toast } from 'react-hot-toast';
 
-export default function ProductCard({ product }: { product: any }) {
+interface Product {
+  id: string;
+  nume: string;
+  pret: number;
+  stripePriceId: string;
+  imagineUrl: string | null;
+}
+
+export default function ProductCard({ product }: { product: Product }) {
   const { addItem } = useShoppingCart();
 
   function handleAddItem() {
-    const itemToAdd = {
-      // ATENȚIE: Aici trebuie să pui ID-ul PREȚULUI din Stripe, nu ID-ul produsului
-      price: product.fields.pret, // Trebuie să adaugi acest câmp în Contentful
-      name: product.fields.nume,
+    if (!product.stripePriceId) {
+      toast.error("Acest produs nu este disponibil pentru vânzare.");
+      return;
+    }
+const itemToAdd = {
+      // 'price' este PREȚUL NUMERIC
+      price: product.pret, 
+
+      // 'id' este ID-ul PREȚULUI de la Stripe. Biblioteca îl va folosi
+      // în loc de 'price' la checkout.
+      id: product.stripePriceId, 
+
+      // SKU-ul rămâne ID-ul unic al produsului din Sanity/CMS
+      sku: product.id,
+
+      // Restul datelor pentru afișare
+      name: product.nume,
       currency: 'RON',
-      image: 'https:' + product.fields.imagineProdus.fields.file.url,
-      // Folosește ID-ul de la Contentful ca ID unic al produsului
-      sku: product.sys.id,
+      image: product.imagineUrl || '',
     };
     addItem(itemToAdd);
-    toast.success(`${product.fields.numeProdus} a fost adăugat în coș!`);
+    toast.success(`${product.nume} a fost adăugat în coș!`);
   }
 
   return (
-    <div className="bg-gray-800 rounded-lg overflow-hidden group flex flex-col">
-      {/* ... Partea de imagine ... */}
-      <div className="p-4 ...">
-        {/* ... Partea de nume și preț ... */}
-        <button 
-          onClick={handleAddItem}
-          className="mt-4 w-full bg-cyan-500 text-white font-bold py-2 px-4 rounded-md hover:bg-cyan-600 transition-colors"
+    <div className="bg-gray-800 rounded-lg overflow-hidden group flex flex-col border border-gray-700">
+      <div className="relative w-full h-64 bg-gray-700">
+        {product.imagineUrl && (
+          <Image 
+            src={product.imagineUrl}
+            alt={product.nume}
+            fill 
+            sizes="(max-width: 768px) 50vw, 33vw, 25vw"
+            className="object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        )}
+      </div>
+      <div className="p-4 flex flex-col flex-grow text-center">
+        <h3 className="text-xl font-semibold flex-grow">{product.nume}</h3>
+        <div className="mt-auto pt-4">
+          <p className="mt-2 text-2xl font-bold text-cyan-400">{product.pret} RON</p>
+          <button 
+            onClick={handleAddItem}
+            className="mt-4 w-full bg-cyan-500 text-white font-bold py-2 px-4 rounded-md hover:bg-cyan-600 disabled:bg-gray-500"
+            disabled={!product.stripePriceId}
           >
-          Adaugă în coș
-        </button>
+            Adaugă în coș
+          </button>
+        </div>
       </div>
     </div>
   );
