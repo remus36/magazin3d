@@ -1,7 +1,7 @@
 // in app/page.tsx
 
 import { client, urlFor } from "@/lib/sanityClient";
-import { SimplifiedProduct, SimplifiedProject } from "@/types";
+import { SimplifiedProduct, SimplifiedProject,  SanityProduct } from "@/types";
 
 // Importăm componentele-secțiuni
 import Hero from "@/components/Hero";
@@ -52,8 +52,9 @@ async function getFeaturedProducts(): Promise<SimplifiedProduct[]> {
     "imagineProdus": imagineProdus
   }`;
   try {
-    const sanityProducts = await client.fetch(query);
-    const cleanedProducts: SimplifiedProduct[] = sanityProducts.map((product: any) => ({
+    
+    const sanityProducts: SanityProduct[] = await client.fetch(query); // Adaugă tipul aici
+    const cleanedProducts = sanityProducts.map((product: any) => ({
       id: product._id,
       nume: product.nume,
       pret: product.pret,

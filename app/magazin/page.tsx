@@ -5,6 +5,7 @@ import { client, urlFor } from '@/lib/sanityClient';
 import ProductCard from '@/components/ProductCard';
 import { SanityProduct, SimplifiedProduct } from '@/types'; // Importă ambele tipuri
 
+
 export const metadata: Metadata = {
   title: 'Magazin - Sanity.io',
   description: 'Descoperă toate creațiile noastre unice.',
@@ -23,6 +24,7 @@ async function getProducts(): Promise<SimplifiedProduct[]> {
 
   try {
     const sanityProducts: SanityProduct[] = await client.fetch(query);
+    
     
     // Asigurăm că datele se potrivesc cu tipul nostru
 const cleanedProducts: SimplifiedProduct[] = sanityProducts.map((product: SanityProduct) => ({
