@@ -1,20 +1,15 @@
-// Fisier: components/ProductCard.tsx
-
 "use client";
 
 import Image from 'next/image';
 import { useShoppingCart } from 'use-shopping-cart';
 import { toast } from 'react-hot-toast';
+import { SimplifiedProduct } from "@/types";
 
-interface Product {
-  id: string;
-  nume: string;
-  pret: number;
-  stripePriceId: string;
-  imagineUrl: string | null;
+interface ProductCardProps {
+  product: SimplifiedProduct;
 }
 
-export default function ProductCard({ product }: { product: Product }) {
+export default function ProductCard({ product }: ProductCardProps) {
   const { addItem } = useShoppingCart();
 
   function handleAddItem() {
@@ -22,28 +17,37 @@ export default function ProductCard({ product }: { product: Product }) {
       toast.error("Acest produs nu este disponibil pentru vânzare.");
       return;
     }
-const itemToAdd = {
-      // 'price' este PREȚUL NUMERIC
-      price: product.pret, 
 
-      // 'id' este ID-ul PREȚULUI de la Stripe. Biblioteca îl va folosi
-      // în loc de 'price' la checkout.
-      id: product.stripePriceId, 
+    // --- BLOCUL CRUCIAL, REVIZUIT ---
+    const itemToAdd = {
+      // 'price' ESTE NUMERIC. Îi dăm prețul de afișare.
+      price: product.pret,
 
-      // SKU-ul rămâne ID-ul unic al produsului din Sanity/CMS
-      sku: product.id,
+      // 'sku' ESTE ID-ul prețului de la Stripe (price_...).
+      // Aceasta este convenția pe care o folosesc multe versiuni
+      // pentru a trimite ID-ul la checkout.
+      sku: product.stripePriceId,
+      
+      // Aici adăugăm și ID-ul produsului din Sanity ca 'product_id'
+      // pentru a-l avea la dispoziție dacă avem nevoie.
+      product_id: product.id,
 
-      // Restul datelor pentru afișare
+      // Restul datelor pentru afișare.
       name: product.nume,
       currency: 'RON',
       image: product.imagineUrl || '',
     };
+    // --- SFÂRȘITUL BLOCULUI REVIZUIT ---
+
+    // Acum 'price' este number, iar TypeScript este fericit.
     addItem(itemToAdd);
+
     toast.success(`${product.nume} a fost adăugat în coș!`);
   }
 
   return (
     <div className="bg-gray-800 rounded-lg overflow-hidden group flex flex-col border border-gray-700">
+      {/* ... restul codului JSX rămâne IDENTIC ... */}
       <div className="relative w-full h-64 bg-gray-700">
         {product.imagineUrl && (
           <Image 

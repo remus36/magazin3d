@@ -3,7 +3,7 @@
 import { Metadata } from 'next';
 import { client, urlFor } from '@/lib/sanityClient';
 import ProductCard from '@/components/ProductCard';
-import { SimplifiedProduct } from '@/types'; // PASUL 1: Importă noul tip
+import { SanityProduct, SimplifiedProduct } from '@/types'; // Importă ambele tipuri
 
 export const metadata: Metadata = {
   title: 'Magazin - Sanity.io',
@@ -22,20 +22,21 @@ async function getProducts(): Promise<SimplifiedProduct[]> {
   }`;
 
   try {
-    const sanityProducts = await client.fetch(query);
+    const sanityProducts: SanityProduct[] = await client.fetch(query);
     
     // Asigurăm că datele se potrivesc cu tipul nostru
-    const cleanedProducts: SimplifiedProduct[] = sanityProducts.map((product: any) => ({
-      id: product._id,
-      nume: product.nume,
-      pret: product.pret,
-      stripePriceId: product.stripePriceId,
-      slug: product.slug,
-      imagineUrl: product.imagineProdus ? urlFor(product.imagineProdus).width(500).url() : null,
-    }));
+const cleanedProducts: SimplifiedProduct[] = sanityProducts.map((product: SanityProduct) => ({
+  id: product._id,
+  nume: product.nume,
+  pret: product.pret,
+  stripePriceId: product.stripePriceId,
+  slug: product.slug.current, // <-- AICI ESTE CORECȚIA!
+  imagineUrl: product.imagineProdus ? urlFor(product.imagineProdus).width(500).url() : null,
+}));
     
     return cleanedProducts;
-  } catch (error) {
+  } 
+    catch (error) {
     console.error("Eroare la preluarea datelor din Sanity:", error);
     return [];
   }
