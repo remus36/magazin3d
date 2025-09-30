@@ -1,17 +1,18 @@
 // in app/portofoliu/page.tsx
 
 import { Metadata } from 'next';
-import Image from 'next/image'; // Probabil vei avea nevoie de Image
-import Link from 'next/link';   // Și de Link pentru a naviga la detalii
+import Image from 'next/image';
+import Link from 'next/link';
 import { client, urlFor } from '@/lib/sanityClient';
-import { SimplifiedProject } from '@/types'; // Importă tipul pentru proiect
+// Importăm tipurile necesare
+import { SanityProject, SimplifiedProject } from '@/types'; 
 
 export const metadata: Metadata = {
   title: 'Portofoliu - PixelForge 3D',
   description: 'O selecție a celor mai bune proiecte de modelare 3D.',
 };
 
-// Funcție nouă pentru a prelua proiectele din Sanity
+// Adăugăm tipurile Promise<...> pentru a fi expliciți
 async function getProjects(): Promise<SimplifiedProject[]> {
   const query = `*[_type == "project"]{
     _id,
@@ -22,12 +23,14 @@ async function getProjects(): Promise<SimplifiedProject[]> {
   }`;
 
   try {
-    const sanityProjects = await client.fetch(query);
+    // Aplicăm tipul SanityProject la rezultatul fetch
+    const sanityProjects: SanityProject[] = await client.fetch(query);
 
-    const cleanedProjects: SimplifiedProject[] = sanityProjects.map((project: any) => ({
+    // Aplicăm tipul SanityProject la parametrul .map()
+    const cleanedProjects: SimplifiedProject[] = sanityProjects.map((project: SanityProject) => ({
       id: project._id,
       titlu: project.titlu,
-      slug: project.slug,
+      slug: project.slug.current,
       descriereScurta: project.descriereScurta,
       imagineUrl: project.imagineProiect ? urlFor(project.imagineProiect).width(600).url() : null,
     }));
@@ -42,6 +45,7 @@ async function getProjects(): Promise<SimplifiedProject[]> {
 export default async function PortofoliuPage() {
   const projects = await getProjects();
 
+  // ... restul codului rămâne identic ...
   if (!projects || projects.length === 0) {
     return (
       <div className="container mx-auto px-6 py-20 text-center">
@@ -58,10 +62,8 @@ export default async function PortofoliuPage() {
           O colecție de proiecte care demonstrează pasiunea și abilitățile mele în modelarea 3D.
         </p>
       </div>
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {projects.map((project: SimplifiedProject) => (
-          // Aici vom afișa cardul pentru fiecare proiect
+        {projects.map((project: SimplifiedProject) => ( // Aici folosim tipul curățat
           <Link href={`/portofoliu/${project.slug}`} key={project.id} className="bg-gray-800 rounded-lg overflow-hidden group border border-gray-700 hover:border-cyan-500 transition-all">
             <div className="relative w-full h-80 bg-gray-700">
               {project.imagineUrl && (
@@ -69,7 +71,7 @@ export default async function PortofoliuPage() {
                   src={project.imagineUrl}
                   alt={project.titlu}
                   fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  sizes="(max-width: 768px) 100vw, 50vw, 33vw"
                   className="object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               )}
