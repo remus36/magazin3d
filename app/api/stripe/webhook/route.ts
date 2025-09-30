@@ -24,12 +24,12 @@ export async function POST(req: NextRequest) {
     }
 
     if (event.type === 'product.created') {
-        const product = event.data.object as Stripe.Product;
+       //  const product = event.data.object as Stripe.Product;
         // ... logica ta ...
     }
     
     if (event.type === 'price.created' || event.type === 'price.updated') {
-        const price = event.data.object as Stripe.Price;
+       //  const price = event.data.object as Stripe.Price;
         // ... logica ta ...
     }
 

@@ -1,9 +1,10 @@
 // in app/page.tsx
 
+// Asigură-te că toate tipurile necesare sunt importate
+import { SanityProject, SanityProduct, SimplifiedProduct, SimplifiedProject } from "@/types"; 
 import { client, urlFor } from "@/lib/sanityClient";
-import { SimplifiedProduct, SimplifiedProject,  SanityProduct } from "@/types";
 
-// Importăm componentele-secțiuni
+// ... importă componentele secțiunilor (Hero, etc.) ...
 import Hero from "@/components/Hero";
 import Portfolio from "@/components/Portfolio";
 import Shop from "@/components/Shop";
@@ -12,25 +13,18 @@ import Process from "@/components/Process";
 import Testimonials from "@/components/Testimonials";
 import ContactCTA from "@/components/ContactCTA";
 
-// --- Funcții pentru Preluarea Datelor ---
+// --- Funcții pentru Preluarea Datelor (CORECTATE) ---
 
-// Funcție pentru a prelua ULTIMELE 3 proiecte
 async function getFeaturedProjects(): Promise<SimplifiedProject[]> {
-  // `| order(_createdAt desc)` - sortează după data creării, descrescător
-  // `[0...3]` - ia primele 3 rezultate (adică de la index 0 la 2)
   const query = `*[_type == "project"] | order(_createdAt desc) [0...3] {
-    _id,
-    titlu,
-    "slug": slug.current,
-    descriereScurta,
-    "imagineProiect": imagineProiect
+    _id, titlu, "slug": slug.current, descriereScurta, "imagineProiect": imagineProiect
   }`;
   try {
-    const sanityProjects = await client.fetch(query);
-    const cleanedProjects: SimplifiedProject[] = sanityProjects.map((project: any) => ({
+    const sanityProjects: SanityProject[] = await client.fetch(query); // Adaugă tipul aici
+    const cleanedProjects: SimplifiedProject[] = sanityProjects.map((project: SanityProject) => ({ // Adaugă tipul aici
       id: project._id,
       titlu: project.titlu,
-      slug: project.slug,
+      slug: project.slug.current,
       descriereScurta: project.descriereScurta,
       imagineUrl: project.imagineProiect ? urlFor(project.imagineProiect).width(600).url() : null,
     }));
@@ -41,25 +35,18 @@ async function getFeaturedProjects(): Promise<SimplifiedProject[]> {
   }
 }
 
-// Funcție pentru a prelua ULTIMELE 4 produse
 async function getFeaturedProducts(): Promise<SimplifiedProduct[]> {
   const query = `*[_type == "product"] | order(_createdAt desc) [0...4] {
-    _id,
-    nume,
-    pret,
-    stripePriceId,
-    "slug": slug.current,
-    "imagineProdus": imagineProdus
+    _id, nume, pret, stripePriceId, "slug": slug.current, "imagineProdus": imagineProdus
   }`;
   try {
-    
     const sanityProducts: SanityProduct[] = await client.fetch(query); // Adaugă tipul aici
-    const cleanedProducts = sanityProducts.map((product: any) => ({
+    const cleanedProducts: SimplifiedProduct[] = sanityProducts.map((product: SanityProduct) => ({ // Adaugă tipul aici
       id: product._id,
       nume: product.nume,
       pret: product.pret,
       stripePriceId: product.stripePriceId,
-      slug: product.slug,
+      slug: product.slug.current,
       imagineUrl: product.imagineProdus ? urlFor(product.imagineProdus).width(500).url() : null,
     }));
     return cleanedProducts;
@@ -72,17 +59,14 @@ async function getFeaturedProducts(): Promise<SimplifiedProduct[]> {
 // --- Componenta Paginii Principale ---
 
 export default async function HomePage() {
-  // Preluăm datele în paralel pentru eficiență
   const [featuredProjects, featuredProducts] = await Promise.all([
     getFeaturedProjects(),
     getFeaturedProducts(),
   ]);
 
   return (
-    // 'main' este deja în layout, deci nu mai este necesar aici
     <>
       <Hero />
-      {/* Pasăm datele preluate către componentele corespunzătoare */}
       <Portfolio projects={featuredProjects} />
       <Shop products={featuredProducts} />
       <About />
