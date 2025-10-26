@@ -36,7 +36,7 @@ interface ProjectPageProps {
 /**
  * Componenta de pagină dinamică pentru afișarea detaliilor unui proiect.
  */
-export default async function ProjectPage({ params }: ProjectPageProps) {
+export default async function ProjectPage({ params }: { params: { slug: string } }) {
   const project = await getProject(params.slug);
 
   // Dacă proiectul nu este găsit, randăm pagina 404 standard a Next.js

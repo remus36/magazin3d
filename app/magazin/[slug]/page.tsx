@@ -1,54 +1,35 @@
-// in app/magazin/[slug]/page.tsx
+// in: app/magazin/[slug]/page.tsx
 
 import { client, urlFor } from "@/lib/sanityClient";
-
 import Image from "next/image";
-import AddToCartBtn from "./AddToCartBtn"; // Vom crea această componentă client imediat
+import AddToCartBtn from "./AddToCartBtn";
+import { notFound } from 'next/navigation';
 
-// Funcție pentru a prelua datele unui singur produs pe baza slug-ului
+// Funcția getProduct rămâne LA FEL
 async function getProduct(slug: string) {
   const query = `*[_type == "product" && slug.current == "${slug}"][0]{
-    _id,
-    nume,
-    descriere,
-    pret,
-    stripePriceId,
-    "slug": slug.current,
-    "imagineProdus": imagineProdus,
-    // Putem prelua și o galerie de imagini dacă o definim în Sanity
-    // "galerieImagini": galerieImagini,
+    _id, nume, descriere, pret, stripePriceId, "slug": slug.current, 
+    "imagineUrl": imagineProdus.asset->url
   }`;
-
   try {
     const product = await client.fetch(query);
-    // Nu mai este nevoie de "curățare" complexă aici, dar generăm URL-ul imaginii
-    if (product) {
-      product.imagineUrl = product.imagineProdus ? urlFor(product.imagineProdus).url() : null;
-    }
     return product;
   } catch (error) {
-    console.error("Eroare la preluarea produsului:", error);
+    console.error(`Eroare la preluarea produsului cu slug: ${slug}`, error);
     return null;
   }
 }
 
-// Props-urile pe care le primește pagina
-interface ProductPageProps {
-  params: {
-    slug: string;
-  };
-}
-
-// Pagina este o componentă server asincronă
-export default async function ProductPage({ params }: ProductPageProps) {
+// === ÎNCEPUTUL MODIFICĂRII ===
+// Nu mai definim interfața 'ProductPageProps'
+// În schimb, tipăm 'params' direct în definiția funcției.
+export default async function ProductPage({ params }: { params: { slug: string } }) {
+// =============================
+  
   const product = await getProduct(params.slug);
 
   if (!product) {
-    return (
-      <div className="container mx-auto px-6 py-20 text-center">
-        <h1 className="text-4xl font-bold">Produsul nu a fost găsit.</h1>
-      </div>
-    );
+    notFound();
   }
 
   return (
@@ -63,6 +44,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, 50vw"
+              priority
             />
           )}
         </div>
@@ -74,16 +56,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <div className="text-gray-300 leading-relaxed prose prose-invert">
             <p>{product.descriere}</p>
           </div>
-          
-          {/* Butonul de Adăugare în Coș (componentă client separată) */}
           <div className="mt-8">
             <AddToCartBtn product={{
-                  _id: product._id,
-                  nume: product.nume,
-                  pret: product.pret,
-                  stripePriceId: product.stripePriceId,
-                  imagineUrl: product.imagineUrl
-              }} />
+                _id: product._id,
+                nume: product.nume,
+                pret: product.pret,
+                stripePriceId: product.stripePriceId,
+                imagineUrl: product.imagineUrl
+            }} />
           </div>
         </div>
       </div>
