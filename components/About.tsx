@@ -6,7 +6,7 @@ export default function About() {
       <div className="container mx-auto px-6 flex flex-col md:flex-row items-center gap-12">
         <div className="md:w-1/3">
           <Image
-            src="https://placehold.co/500x500/1E293B/FFFFFF?text=Fotografia+Ta" 
+            src="/images/remusA.jpg"
             alt="Your Name" 
             width={500} 
             height={500}

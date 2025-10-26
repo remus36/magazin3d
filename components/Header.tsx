@@ -8,7 +8,7 @@ export default function Header() {
         
         <Link href="/" className="flex items-center">
           <Image
-            src="/images/logo.png" // Sau ce logo folosești tu
+            src="/images/dreamlogo.png" // Sau ce logo folosești tu
             alt="Remus3D Logo" 
             width={180} 
             height={45} 

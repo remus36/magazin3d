@@ -77,7 +77,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
           
           {/* Butonul de Adăugare în Coș (componentă client separată) */}
           <div className="mt-8">
-            <AddToCartBtn product={product} />
+            <AddToCartBtn product={{
+                  _id: product._id,
+                  nume: product.nume,
+                  pret: product.pret,
+                  stripePriceId: product.stripePriceId,
+                  imagineUrl: product.imagineUrl
+              }} />
           </div>
         </div>
       </div>

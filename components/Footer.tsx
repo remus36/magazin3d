@@ -14,7 +14,7 @@ export default function Footer() {
             <a href="#" className="flex items-center">
               {/* Folosim același logo ca în Header */}
               <Image
-                src="/images/logo.png"
+                src="/images/dreamlogo.png"
                 alt="Logo Footer"
                 width={150}
                 height={38}
