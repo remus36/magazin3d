@@ -1,7 +1,7 @@
 // in app/magazin/[slug]/page.tsx
 
 import { client, urlFor } from "@/lib/sanityClient";
-import { SimplifiedProduct } from "@/types";
+
 import Image from "next/image";
 import AddToCartBtn from "./AddToCartBtn"; // Vom crea această componentă client imediat
 
