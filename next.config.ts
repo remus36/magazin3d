@@ -23,6 +23,7 @@ const config: NextConfig = {
         protocol: 'https',
         hostname: 'cdn.sanity.io', // Domeniul de unde vin imaginile Sanity
         port: '',
+        
       },
     ],
   },

@@ -1,4 +1,5 @@
-"use client"; // Acest provider trebuie să ruleze pe client
+// in providers/Cart.tsx
+"use client";
 
 import { CartProvider as USCProvider } from "use-shopping-cart";
 
@@ -7,19 +8,21 @@ export default function CartProvider({
 }: {
   children: React.ReactNode;
 }) {
+
+    // ADAUGĂ ACEST LOG
+  console.log("--- CartProvider s-a încărcat! ---");
+  console.log("Stripe Key folosită:", process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+  // =============================
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL as string;
 
   return (
     <USCProvider
-      mode="payment"
+      // --- MODIFICĂRI AICI ---
+      mode="payment" // Am schimbat din 'payment'
       cartMode="client-only"
-      
-      // === LINIA ADĂUGATĂ ===
-      // Îi spunem explicit să salveze coșul în localStorage.
-      // Când un utilizator revine pe site, produsele vor fi tot în coș.
-      shouldPersist={true}
-      // =======================
+      // =========================
 
+      shouldPersist={true}
       stripe={process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string}
       successUrl={`${siteUrl}/success`}
       cancelUrl={`${siteUrl}/cancel`}

@@ -8,6 +8,8 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CartProvider from "@/providers/Cart";
 import { Toaster } from "react-hot-toast";
+import FloatingCartButton from "@/components/FloatingCartButton"; // PASUL 1: Importă
+import CartSidebar from "@/components/CartSidebar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -30,6 +32,10 @@ export default function RootLayout({
             <Header />
             <main className="flex-grow">{children}</main>
             <Footer />
+            
+            {/* Componentele pentru coș sunt acum independente de Header */}
+            <FloatingCartButton /> {/* PASUL 2: Adaugă butonul plutitor */}
+            <CartSidebar />
           </div>
         </CartProvider>
       </body>

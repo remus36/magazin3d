@@ -1,53 +1,52 @@
+// in: components/ProductCard.tsx
+
 "use client";
 
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useShoppingCart } from 'use-shopping-cart';
 import { toast } from 'react-hot-toast';
 import { SimplifiedProduct } from "@/types";
 
-interface ProductCardProps {
-  product: SimplifiedProduct;
-}
-
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ product }: { product: SimplifiedProduct }) {
   const { addItem } = useShoppingCart();
+  const router = useRouter();
 
-  function handleAddItem() {
+  function handleAddItem(event: React.MouseEvent<HTMLButtonElement>) {
+    event.stopPropagation();
+    
     if (!product.stripePriceId) {
       toast.error("Acest produs nu este disponibil pentru vânzare.");
       return;
     }
 
-    // --- BLOCUL CRUCIAL, REVIZUIT ---
     const itemToAdd = {
-      // 'price' ESTE NUMERIC. Îi dăm prețul de afișare.
-      price: product.pret,
-
-      // 'sku' ESTE ID-ul prețului de la Stripe (price_...).
-      // Aceasta este convenția pe care o folosesc multe versiuni
-      // pentru a trimite ID-ul la checkout.
-      sku: product.stripePriceId,
-      
-      // Aici adăugăm și ID-ul produsului din Sanity ca 'product_id'
-      // pentru a-l avea la dispoziție dacă avem nevoie.
-      product_id: product.id,
-
-      // Restul datelor pentru afișare.
+      id: product.stripePriceId, // ID-ul prețului de la Stripe
+      price: product.pret,        // Prețul numeric, pentru afișare
+      sku: product.id,            // ID-ul produsului din Sanity, pentru referință
       name: product.nume,
       currency: 'RON',
       image: product.imagineUrl || '',
     };
-    // --- SFÂRȘITUL BLOCULUI REVIZUIT ---
-
-    // Acum 'price' este number, iar TypeScript este fericit.
+    
     addItem(itemToAdd);
-
     toast.success(`${product.nume} a fost adăugat în coș!`);
   }
 
+  function handleCardClick() {
+    if (product.slug) {
+      router.push(`/magazin/${product.slug}`);
+    } else {
+      console.error("Navigare eșuată: Produsul nu are un slug definit.", product);
+      toast.error("Nu se poate naviga la acest produs.");
+    }
+  }
+
   return (
-    <div className="bg-gray-800 rounded-lg overflow-hidden group flex flex-col border border-gray-700">
-      {/* ... restul codului JSX rămâne IDENTIC ... */}
+    <div 
+      onClick={handleCardClick}
+      className="bg-gray-800 rounded-lg overflow-hidden group flex flex-col border border-gray-700 hover:border-cyan-500 transition-colors duration-300 cursor-pointer"
+    >
       <div className="relative w-full h-64 bg-gray-700">
         {product.imagineUrl && (
           <Image 

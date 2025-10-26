@@ -16,7 +16,7 @@ export default function Header() {
           />
         </Link>
 
-        <div className="hidden md:flex items-center space-x-6 text-white">
+        <div className="hidden md:flex items-center space-x-6 text-white pr-10">
           {/* Link către secțiunea de pe pagina principală */}
           <Link href="/#portfolio" className="hover:text-cyan-400 transition-colors">Portofoliu</Link>
           {/* Link către noua pagină de magazin */}

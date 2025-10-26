@@ -1,10 +1,7 @@
-// in app/portofoliu/page.tsx
-
 import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { client, urlFor } from '@/lib/sanityClient';
-// Importăm tipurile necesare
 import { SanityProject, SimplifiedProject } from '@/types'; 
 
 export const metadata: Metadata = {
@@ -12,29 +9,29 @@ export const metadata: Metadata = {
   description: 'O selecție a celor mai bune proiecte de modelare 3D.',
 };
 
-// Adăugăm tipurile Promise<...> pentru a fi expliciți
 async function getProjects(): Promise<SimplifiedProject[]> {
+  // Preluăm obiectul 'slug' întreg
   const query = `*[_type == "project"]{
     _id,
     titlu,
-    "slug": slug.current,
+    slug,
     descriereScurta,
-    "imagineProiect": imagineProiect
+    imagineProiect
   }`;
 
   try {
-    // Aplicăm tipul SanityProject la rezultatul fetch
     const sanityProjects: SanityProject[] = await client.fetch(query);
-
-    // Aplicăm tipul SanityProject la parametrul .map()
-    const cleanedProjects: SimplifiedProject[] = sanityProjects.map((project: SanityProject) => ({
-      id: project._id,
-      titlu: project.titlu,
-      slug: project.slug.current,
-      descriereScurta: project.descriereScurta,
-      imagineUrl: project.imagineProiect ? urlFor(project.imagineProiect).width(600).url() : null,
-    }));
-
+    const cleanedProjects: SimplifiedProject[] = sanityProjects.map((project: SanityProject) => {
+      const slugValue = project.slug && project.slug.current ? project.slug.current : '';
+      if (!slugValue) console.warn(`AVERTISMENT (Portofoliu): Proiectul "${project.titlu}" nu are slug!`);
+      return {
+        id: project._id,
+        titlu: project.titlu,
+        slug: slugValue, // Folosim valoarea sigură
+        descriereScurta: project.descriereScurta,
+        imagineUrl: project.imagineProiect ? urlFor(project.imagineProiect).width(600).url() : null,
+      };
+    });
     return cleanedProjects;
   } catch (error) {
     console.error("Eroare la preluarea proiectelor din Sanity:", error);
@@ -45,7 +42,6 @@ async function getProjects(): Promise<SimplifiedProject[]> {
 export default async function PortofoliuPage() {
   const projects = await getProjects();
 
-  // ... restul codului rămâne identic ...
   if (!projects || projects.length === 0) {
     return (
       <div className="container mx-auto px-6 py-20 text-center">
@@ -63,7 +59,7 @@ export default async function PortofoliuPage() {
         </p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {projects.map((project: SimplifiedProject) => ( // Aici folosim tipul curățat
+        {projects.map((project: SimplifiedProject) => (
           <Link href={`/portofoliu/${project.slug}`} key={project.id} className="bg-gray-800 rounded-lg overflow-hidden group border border-gray-700 hover:border-cyan-500 transition-all">
             <div className="relative w-full h-80 bg-gray-700">
               {project.imagineUrl && (
