@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link'; // Importăm Link
 // Importă iconițe pentru social media
 import { Linkedin, Instagram, Facebook } from 'lucide-react'; 
 
@@ -24,11 +25,13 @@ export default function Footer() {
           </div>
 
           <div className="flex space-x-6 mb-6 md:mb-0">
-            <a href="/#portfolio" className="hover:text-white transition-colors">Portofoliu</a>
-            <a href="/#shop" className="hover:text-white transition-colors">Magazin</a>
-            <a href="/#about" className="hover:text-white transition-colors">Despre</a>
-            <a href="/#contact" className="hover:text-white transition-colors">Contact</a>
-          </div>
+            {/* Link către secțiunea de pe pagina principală */}
+          <Link href="/#portfolio" className="hover:text-cyan-400 transition-colors">Portofoliu</Link>
+          {/* Link către noua pagină de magazin */}
+          <Link href="/#shop" className="hover:text-cyan-400 transition-colors">Magazin</Link>
+          <Link href="/#about" className="hover:text-cyan-400 transition-colors">Despre</Link>
+          <Link href="/#contact" className="hover:text-cyan-400 transition-colors">Contact</Link>
+        </div>
 
           <div className="flex space-x-4">
             {/* Înlocuiește '#' cu linkurile tale reale */}
