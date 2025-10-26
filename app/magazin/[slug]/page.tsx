@@ -1,6 +1,8 @@
 // in: app/magazin/[slug]/page.tsx
 
-import { client, urlFor } from "@/lib/sanityClient";
+// Importăm tipurile necesare pentru metadate dinamice
+import type { Metadata, ResolvingMetadata } from 'next';
+import { client } from "@/lib/sanityClient";
 import Image from "next/image";
 import AddToCartBtn from "./AddToCartBtn";
 import { notFound } from 'next/navigation';
@@ -20,12 +22,29 @@ async function getProduct(slug: string) {
   }
 }
 
-// === ÎNCEPUTUL MODIFICĂRII ===
-// Nu mai definim interfața 'ProductPageProps'
-// În schimb, tipăm 'params' direct în definiția funcției.
-export default async function ProductPage({ params }: { params: { slug: string } }) {
-// =============================
-  
+// Props-urile pe care le primește pagina
+type Props = {
+  params: { slug: string };
+};
+
+// --- ADAUGĂM FUNCȚIA PENTRU METADATE DINAMICE ---
+export async function generateMetadata(
+  { params }: Props,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const product = await getProduct(params.slug);
+  if (!product) {
+    return { title: 'Produs negăsit' };
+  }
+  return {
+    title: `${product.nume} - PixelForge 3D`,
+    description: product.descriere || 'Detalii despre produs',
+  };
+}
+// ------------------------------------------------
+
+// Acum folosim tipul 'Props' pe care l-am definit
+export default async function ProductPage({ params }: Props) {
   const product = await getProduct(params.slug);
 
   if (!product) {
@@ -35,7 +54,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
   return (
     <div className="container mx-auto px-6 py-12">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-        {/* Coloana de Imagine */}
+        {/* ... codul JSX pentru afișarea produsului (rămâne la fel) ... */}
         <div className="relative w-full h-96 md:h-[500px] bg-gray-800 rounded-lg overflow-hidden">
           {product.imagineUrl && (
             <Image
@@ -48,8 +67,6 @@ export default async function ProductPage({ params }: { params: { slug: string }
             />
           )}
         </div>
-
-        {/* Coloana de Detalii */}
         <div className="flex flex-col justify-center">
           <h1 className="text-4xl lg:text-5xl font-extrabold mb-4">{product.nume}</h1>
           <p className="text-3xl font-bold text-cyan-400 mb-6">{product.pret} RON</p>

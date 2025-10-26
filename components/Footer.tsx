@@ -24,10 +24,10 @@ export default function Footer() {
           </div>
 
           <div className="flex space-x-6 mb-6 md:mb-0">
-            <a href="#portfolio" className="hover:text-white transition-colors">Portofoliu</a>
-            <a href="#shop" className="hover:text-white transition-colors">Magazin</a>
-            <a href="#about" className="hover:text-white transition-colors">Despre</a>
-            <a href="#contact" className="hover:text-white transition-colors">Contact</a>
+            <a href="/#portfolio" className="hover:text-white transition-colors">Portofoliu</a>
+            <a href="/#shop" className="hover:text-white transition-colors">Magazin</a>
+            <a href="/#about" className="hover:text-white transition-colors">Despre</a>
+            <a href="/#contact" className="hover:text-white transition-colors">Contact</a>
           </div>
 
           <div className="flex space-x-4">
