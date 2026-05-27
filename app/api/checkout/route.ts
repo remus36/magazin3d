@@ -3,11 +3,11 @@ import Stripe from "stripe";
 
 export const dynamic = "force-dynamic";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-01-27.acacia",
-});
-
 export async function POST(req: NextRequest) {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: "2025-01-27.acacia",
+  });
+
   try {
     const { items } = await req.json();
 
@@ -15,11 +15,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Coșul este gol." }, { status: 400 });
     }
 
-    // Construim line items folosind stripePriceId din Sanity
-    // Aceasta e abordarea cea mai curată — prețurile sunt deja definite în Stripe Dashboard
     const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = items.map(
       (item: { stripePriceId: string; quantity: number }) => ({
-        price: item.stripePriceId, // ID-ul prețului din Stripe Dashboard
+        price: item.stripePriceId,
         quantity: item.quantity,
       })
     );
@@ -34,7 +32,6 @@ export async function POST(req: NextRequest) {
       shipping_address_collection: {
         allowed_countries: ["RO"],
       },
-      // Opțional: colectează email-ul clientului
       billing_address_collection: "auto",
     });
 
