@@ -1,136 +1,166 @@
-// in: components/CartSidebar.tsx
-
 "use client";
 
-import { useShoppingCart } from "use-shopping-cart";
-import { X, Plus, Minus, Trash2 } from "lucide-react";
+// in: components/CartSidebar.tsx
+// ÎNLOCUIEȘTE complet fișierul existent
+
+import { useCart } from "@/providers/Cart";
+import { X, Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import Link from "next/link";
+import { useEffect } from "react";
 
 export default function CartSidebar() {
-  // Extragem funcțiile necesare. 'redirectToCheckout' NU mai este necesar.
-  const { 
-    cartCount, 
-    shouldDisplayCart, 
-    handleCartClick, 
-    cartDetails, 
-    removeItem, 
-    incrementItem, 
-    decrementItem,
+  const {
+    items,
+    isOpen,
+    closeCart,
+    removeItem,
+    updateQuantity,
+    totalItems,
     totalPrice,
-  } = useShoppingCart();
+  } = useCart();
 
-  // Stare pentru a gestiona feedback-ul vizual la click pe butonul de checkout
-  const [isCheckingOut, setIsCheckingOut] = useState(false);
-
-  /**
-   * Gestionează procesul de checkout.
-   * Trimite detaliile coșului la un API route pentru a crea o sesiune Stripe
-   * și apoi redirecționează utilizatorul la pagina de plată.
-   */
-  async function handleCheckoutClick() {
-    if (cartCount !== undefined && cartCount > 0) {
-      setIsCheckingOut(true); // Afișăm starea de încărcare
-      try {
-        // Trimitem o cerere POST la endpoint-ul nostru API securizat
-        const response = await fetch('/api/checkout', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(cartDetails), // Coșul este trimis în corpul cererii
-        });
-
-        const session = await response.json();
-
-        // Verificăm dacă cererea a fost un succes
-        if (response.ok) {
-          // Extragem URL-ul de plată din răspunsul serverului
-          if (session.url) {
-            // Facem redirecționarea manual, folosind API-ul standard al browser-ului
-            window.location.href = session.url;
-          } else {
-            throw new Error("Răspunsul de la server nu conține un URL de checkout.");
-          }
-        } else {
-          // Dacă serverul a returnat o eroare, o aruncăm pentru a fi prinsă de 'catch'
-          throw new Error(session.error || "A apărut o eroare la server.");
-        }
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Eroare necunoscută';
-        console.error("Eroare la checkout:", errorMessage);
-        // Poți adăuga o notificare "toast" de eroare aici
-        // alert(`Eroare: ${errorMessage}`);
-        setIsCheckingOut(false); // Oprim starea de încărcare DOAR în caz de eroare
-      }
-    }
-  }
+  // Blochează scroll-ul când sidebar-ul e deschis
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [isOpen]);
 
   return (
-    <div
-      className={`fixed inset-0 bg-black bg-opacity-50 z-50 transition-opacity duration-300 ${
-        shouldDisplayCart ? "opacity-100" : "opacity-0 pointer-events-none"
-      }`}
-      onClick={!shouldDisplayCart ? undefined : () => handleCartClick()}
-    >
+    <>
+      {/* Overlay */}
       <div
-        className={`fixed top-0 right-0 h-full w-full max-w-md bg-gray-900 shadow-lg flex flex-col transform transition-transform duration-300 ${
-          shouldDisplayCart ? "translate-x-0" : "translate-x-full"
+        className={`fixed inset-0 bg-black/60 z-40 transition-opacity duration-300 ${
+          isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
-        onClick={(e) => e.stopPropagation()}
+        onClick={closeCart}
+      />
+
+      {/* Sidebar panel */}
+      <div
+        className={`fixed top-0 right-0 h-full w-full max-w-md bg-gray-900 border-l border-gray-800 z-50 flex flex-col transform transition-transform duration-300 ease-in-out ${
+          isOpen ? "translate-x-0" : "translate-x-full"
+        }`}
       >
-        {/* Header-ul panoului */}
-        <div className="flex justify-between items-center p-4 border-b border-gray-700">
-          <h2 className="text-xl font-bold">Coșul tău ({cartCount ?? 0})</h2>
-          <button onClick={() => handleCartClick()} className="p-1 rounded-full hover:bg-gray-700">
-            <X size={24} />
+        {/* Header */}
+        <div className="flex justify-between items-center p-5 border-b border-gray-800">
+          <div className="flex items-center gap-2">
+            <ShoppingBag className="w-5 h-5 text-cyan-400" />
+            <h2 className="text-lg font-bold text-white">
+              Coșul tău{" "}
+              {totalItems > 0 && (
+                <span className="text-cyan-400">({totalItems})</span>
+              )}
+            </h2>
+          </div>
+          <button
+            onClick={closeCart}
+            className="p-2 rounded-full hover:bg-gray-800 text-gray-400 hover:text-white transition-colors"
+          >
+            <X size={20} />
           </button>
         </div>
 
-        {/* Corpul panoului (lista de produse) */}
-        <div className="flex-1 overflow-y-auto">
-          {cartCount !== undefined && cartCount > 0 ? (
-            <div className="p-4">
-              {Object.values(cartDetails ?? {}).map((item) => (
-                <div key={item.id} className="flex items-center gap-4 mb-4">
-                  <div className="relative w-20 h-20 rounded-md overflow-hidden bg-gray-800">
-                    <Image src={item.image!} alt={item.name} fill className="object-cover" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold">{item.name}</h3>
-                    <p className="text-sm text-gray-400">{item.formattedValue}</p>
-                    <div className="flex items-center gap-2 mt-2">
-                      <button onClick={() => decrementItem(item.id)} className="p-1 rounded-full hover:bg-gray-700"><Minus size={16} /></button>
-                      <span>{item.quantity}</span>
-                      <button onClick={() => incrementItem(item.id)} className="p-1 rounded-full hover:bg-gray-700"><Plus size={16} /></button>
-                      <button onClick={() => removeItem(item.id)} className="ml-auto text-red-500 hover:text-red-400"><Trash2 size={18} /></button>
-                    </div>
-                  </div>
-                </div>
-              ))}
+        {/* Lista produse */}
+        <div className="flex-1 overflow-y-auto p-5 space-y-4">
+          {items.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-center gap-4">
+              <ShoppingBag className="w-16 h-16 text-gray-700" />
+              <p className="text-gray-400 text-lg">Coșul tău este gol</p>
+              <button
+                onClick={closeCart}
+                className="text-cyan-400 hover:text-cyan-300 underline text-sm"
+              >
+                Continuă cumpărăturile
+              </button>
             </div>
           ) : (
-            <div className="p-8 text-center text-gray-400">
-              <p>Coșul tău este gol.</p>
-            </div>
+            items.map((item) => (
+              <div
+                key={item.id}
+                className="flex gap-4 bg-gray-800/50 rounded-xl p-4 border border-gray-700/50"
+              >
+                {/* Imagine */}
+                <div className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-gray-700">
+                  {item.imagineUrl ? (
+                    <Image
+                      src={item.imagineUrl}
+                      alt={item.nume}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-600">
+                      <ShoppingBag size={24} />
+                    </div>
+                  )}
+                </div>
+
+                {/* Detalii */}
+                <div className="flex-1 min-w-0">
+                  <p className="text-white font-medium truncate">{item.nume}</p>
+                  <p className="text-cyan-400 font-semibold mt-1">{item.pret} RON</p>
+
+                  {/* Cantitate */}
+                  <div className="flex items-center gap-2 mt-2">
+                    <button
+                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                      className="w-7 h-7 rounded-full bg-gray-700 hover:bg-gray-600 flex items-center justify-center text-white transition-colors"
+                    >
+                      <Minus size={12} />
+                    </button>
+                    <span className="text-white w-6 text-center text-sm font-medium">
+                      {item.quantity}
+                    </span>
+                    <button
+                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                      className="w-7 h-7 rounded-full bg-gray-700 hover:bg-gray-600 flex items-center justify-center text-white transition-colors"
+                    >
+                      <Plus size={12} />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Șterge */}
+                <button
+                  onClick={() => removeItem(item.id)}
+                  className="p-1 text-gray-500 hover:text-red-400 transition-colors flex-shrink-0"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            ))
           )}
         </div>
 
-        {/* Footer-ul panoului */}
-        {(cartCount !== undefined && cartCount > 0) && (
-          <div className="p-4 border-t border-gray-700">
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-lg font-semibold">Total</span>
-              <span className="text-xl font-bold text-cyan-400">{totalPrice?.toFixed(2)} RON</span>
+        {/* Footer cu total + buton checkout */}
+        {items.length > 0 && (
+          <div className="p-5 border-t border-gray-800 space-y-4">
+            <div className="flex justify-between items-center">
+              <span className="text-gray-400">Subtotal</span>
+              <span className="text-white font-bold text-lg">
+                {totalPrice.toFixed(2)} RON
+              </span>
             </div>
-            <button
-              onClick={handleCheckoutClick}
-              disabled={isCheckingOut}
-              className="w-full bg-cyan-500 text-white font-bold py-3 rounded-md hover:bg-cyan-600 transition-colors disabled:opacity-50 disabled:cursor-wait"
+            <p className="text-xs text-gray-500">
+              Transport calculat la checkout. Livrare doar în România.
+            </p>
+            <Link
+              href="/checkout"
+              onClick={closeCart}
+              className="block w-full bg-cyan-500 hover:bg-cyan-600 text-white text-center font-bold py-3 rounded-md transition-colors active:scale-95"
             >
-              {isCheckingOut ? 'Se procesează...' : 'Finalizează Comanda'}
+              Finalizează Comanda →
+            </Link>
+            <button
+              onClick={closeCart}
+              className="block w-full text-gray-400 hover:text-white text-center text-sm py-1 transition-colors"
+            >
+              Continuă cumpărăturile
             </button>
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 }

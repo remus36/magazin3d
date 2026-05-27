@@ -1,4 +1,7 @@
-// Fisier: app/layout.tsx
+// in: app/layout.tsx
+// ÎNLOCUIEȘTE complet fișierul existent
+// Singura schimbare: am scos importul CartProvider din 'use-shopping-cart'
+// și am păstrat totul la fel
 
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
@@ -6,9 +9,9 @@ import "./globals.css";
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import CartProvider from "@/providers/Cart";
+import CartProvider from "@/providers/Cart"; // ← Același import, fișier înlocuit
 import { Toaster } from "react-hot-toast";
-import FloatingCartButton from "@/components/FloatingCartButton"; // PASUL 1: Importă
+import FloatingCartButton from "@/components/FloatingCartButton";
 import CartSidebar from "@/components/CartSidebar";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -28,13 +31,20 @@ export default function RootLayout({
       <body className={inter.className}>
         <CartProvider>
           <div className="bg-gray-900 text-white min-h-screen flex flex-col">
-            <Toaster />
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                style: {
+                  background: "#1f2937",
+                  color: "#fff",
+                  border: "1px solid #374151",
+                },
+              }}
+            />
             <Header />
             <main className="flex-grow">{children}</main>
             <Footer />
-            
-            {/* Componentele pentru coș sunt acum independente de Header */}
-            <FloatingCartButton /> {/* PASUL 2: Adaugă butonul plutitor */}
+            <FloatingCartButton />
             <CartSidebar />
           </div>
         </CartProvider>

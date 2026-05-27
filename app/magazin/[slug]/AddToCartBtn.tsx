@@ -1,8 +1,9 @@
-// in: app/magazin/[slug]/AddToCartBtn.tsx
-
 "use client";
 
-import { useShoppingCart } from "use-shopping-cart";
+// in: app/magazin/[slug]/AddToCartBtn.tsx
+// ÎNLOCUIEȘTE complet fișierul existent
+
+import { useCart } from "@/providers/Cart";
 import { toast } from "react-hot-toast";
 
 interface AddToCartBtnProps {
@@ -16,7 +17,7 @@ interface AddToCartBtnProps {
 }
 
 export default function AddToCartBtn({ product }: AddToCartBtnProps) {
-  const { addItem } = useShoppingCart();
+  const { addItem } = useCart();
 
   function handleAddItem() {
     if (!product.stripePriceId) {
@@ -24,24 +25,29 @@ export default function AddToCartBtn({ product }: AddToCartBtnProps) {
       return;
     }
 
-    const itemToAdd = {
-      id: product.stripePriceId, // ID-ul prețului de la Stripe
-      price: product.pret,        // Prețul numeric
-      sku: product._id,           // ID-ul produsului din Sanity
-      name: product.nume,
-      currency: 'RON',
-      image: product.imagineUrl || '',
-    };
-    
-    addItem(itemToAdd);
-    toast.success(`${product.nume} a fost adăugat în coș!`);
+    addItem({
+      id: product._id,
+      stripePriceId: product.stripePriceId,
+      nume: product.nume,
+      pret: product.pret,
+      imagineUrl: product.imagineUrl,
+    });
+
+    toast.success(`${product.nume} adăugat în coș!`, {
+      icon: "🛒",
+      style: {
+        background: "#1f2937",
+        color: "#fff",
+        border: "1px solid #374151",
+      },
+    });
   }
 
   return (
     <button
       onClick={handleAddItem}
       disabled={!product.stripePriceId}
-      className="w-full max-w-xs bg-cyan-500 text-white font-bold py-3 px-8 rounded-md hover:bg-cyan-600 transition-colors disabled:bg-gray-500 disabled:cursor-not-allowed"
+      className="w-full max-w-xs bg-cyan-500 text-white font-bold py-3 px-8 rounded-md hover:bg-cyan-600 transition-colors disabled:bg-gray-500 disabled:cursor-not-allowed active:scale-95"
     >
       Adaugă în Coș
     </button>
