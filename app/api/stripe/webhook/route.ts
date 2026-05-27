@@ -1,7 +1,7 @@
-// in: app/api/stripe/webhook/route.ts
-
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
+
+export const dynamic = "force-dynamic";
 // Presupunând că ai creat acest client, așa cum am discutat
 // import { sanityAdminClient } from '@/lib/sanityAdminClient'; 
 

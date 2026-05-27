@@ -1,8 +1,7 @@
-// in: app/api/checkout/route.ts
-// ÎNLOCUIEȘTE complet fișierul existent (dacă există)
-
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
+
+export const dynamic = "force-dynamic";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-01-27.acacia",
