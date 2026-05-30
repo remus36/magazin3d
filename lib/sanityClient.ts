@@ -12,7 +12,7 @@ export const client = createClient({
   projectId,
   dataset,
   apiVersion,
-  useCdn: process.env.NODE_ENV === 'production', // Folosește CDN doar în producție
+  useCdn: false, // CDN dezactivat pentru date live
   token: process.env.SANITY_API_TOKEN,
 });
 
