@@ -1,6 +1,8 @@
 // in app/page.tsx
 
-import { SanityProject, SanityProduct, SimplifiedProduct, SimplifiedProject } from "@/types"; 
+export const revalidate = 60; // Regenerează pagina la fiecare 60 de secunde
+
+import { SanityProject, SanityProduct, SimplifiedProduct, SimplifiedProject } from "@/types";
 import { client, urlFor } from "@/lib/sanityClient";
 
 import Hero from "@/components/Hero";
@@ -77,10 +79,4 @@ export default async function HomePage() {
       <Hero />
       <Portfolio projects={featuredProjects} />
       <Shop products={featuredProducts} />
-      <About />
-      <Process />
-      <Testimonials />
-      <ContactCTA />
-    </>
-  );
-}
+      <About /
