@@ -1,5 +1,7 @@
 // in: app/magazin/page.tsx
 
+export const revalidate = 60; // Regenerează pagina la fiecare 60 de secunde
+
 import { Metadata } from 'next';
 import { client, urlFor } from '@/lib/sanityClient';
 import ProductCard from '@/components/ProductCard';
@@ -82,9 +84,4 @@ export default async function MagazinPage() {
       
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {products.map((product: SimplifiedProduct) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </div>
-    </div>
-  );
-}
+          <ProductCard key=
