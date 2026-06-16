@@ -33,18 +33,18 @@ export async function POST(req: NextRequest) {
       if (customerEmail) {
         try {
           await resend.emails.send({
-            from: 'PixelForge 3D <noreply@pixelforge3d.ro>',
+            from: 'PixelForge 3D <onboarding@resend.dev>',
             to: customerEmail,
             subject: 'Comanda confirmata - PixelForge 3D',
-            html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#111827;color:#fff;padding:40px;border-radius:12px"><h1 style="color:#22d3ee">Comanda Confirmata!</h1><p style="color:#9ca3af">Multumim, ${customerName}!</p><div style="background:#1f2937;border:1px solid #374151;border-radius:8px;padding:24px;margin:24px 0"><p style="color:#9ca3af;font-size:14px">ID Comanda</p><p style="font-family:monospace;color:#22d3ee;font-size:13px">${orderId}</p><hr style="border-color:#374151;margin:16px 0"/><p style="color:#9ca3af;font-size:14px">Total platit</p><p style="font-size:24px;font-weight:bold">${amountTotal} RON</p></div><p style="color:#9ca3af">Comanda va fi procesata in 1-3 zile lucratoare.</p><div style="margin-top:32px;padding-top:24px;border-top:1px solid #374151"><p style="color:#6b7280;font-size:13px">Intrebari? <a href="mailto:blueremus@gmail.com" style="color:#22d3ee">blueremus@gmail.com</a></p></div></div>`,
+            html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#111827;color:#fff;padding:40px;border-radius:12px"><h1 style="color:#22d3ee">Comanda Confirmata!</h1><p style="color:#9ca3af">Multumim, ${customerName}!</p><div style="background:#1f2937;border:1px solid #374151;border-radius:8px;padding:24px;margin:24px 0"><p style="color:#9ca3af;font-size:14px">ID Comanda</p><p style="font-family:monospace;color:#22d3ee;font-size:13px">${orderId}</p><hr style="border-color:#374151;margin:16px 0"/><p style="color:#9ca3af;font-size:14px">Total platit</p><p style="font-size:24px;font-weight:bold">${amountTotal} RON</p></div><p style="color:#9ca3af">Comanda va fi procesata in 1-3 zile lucratoare.</p><div style="margin-top:32px;padding-top:24px;border-top:1px solid #374151"><p style="color:#6b7280;font-size:13px">Intrebari? <a href="mailto:dreamprints.creations@gmail.com" style="color:#22d3ee">dreamprints.creations@gmail.com</a></p></div></div>`,
           });
         } catch (e) { console.error('Email client error:', e); }
       }
 
       try {
         await resend.emails.send({
-          from: 'PixelForge 3D <noreply@pixelforge3d.ro>',
-          to: 'blueremus@gmail.com',
+          from: 'PixelForge 3D <onboarding@resend.dev>',
+          to: 'dreamprints.creations@gmail.com',
           subject: `Comanda noua: ${amountTotal} RON de la ${customerName}`,
           html: `<div style="font-family:Arial,sans-serif"><h2>Comanda noua!</h2><p><b>Client:</b> ${customerName}</p><p><b>Email:</b> ${customerEmail || 'N/A'}</p><p><b>Total:</b> ${amountTotal} RON</p><p><b>ID:</b> <code>${orderId}</code></p></div>`,
         });
