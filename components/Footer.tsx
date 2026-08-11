@@ -42,7 +42,7 @@ export default function Footer() {
         </div>
         
         <div className="mt-8 pt-6 border-t border-gray-800 text-center text-sm">
-          <p>© {currentYear} Creative 3D. Toate drepturile rezervate.</p>
+          <p>© {currentYear} PrintDreamsIn3D. Toate drepturile rezervate.</p>
            {/* Aici poți adăuga linkuri către paginile de Termeni și Confidențialitate */}
           <p className="mt-2">
             <a href="#" className="hover:text-white">Termeni și Condiții</a> ・ <a href="#" className="hover:text-white">Politică de Confidențialitate</a>

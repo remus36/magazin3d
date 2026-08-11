@@ -8,7 +8,7 @@ import ProductCard from '@/components/ProductCard';
 import { SanityProduct, SimplifiedProduct } from '@/types';
 
 export const metadata: Metadata = {
-  title: 'Magazin - PixelForge 3D',
+  title: 'Magazin - PrintDreamsIn3D',
   description: 'Descoperă toate creațiile noastre unice, printate 3D, disponibile pentru vânzare.',
 };
 

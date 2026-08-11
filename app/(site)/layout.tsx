@@ -17,7 +17,7 @@ import CartSidebar from "@/components/CartSidebar";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "PixelForge 3D - Portofoliu si Magazin",
+  title: "PrintDreamsIn3D - Portofoliu si Magazin",
   description: "Modele 3D inovatoare si produse unice printate 3D.",
 };
 

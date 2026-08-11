@@ -5,7 +5,7 @@ import { client, urlFor } from '@/lib/sanityClient';
 import { SanityProject, SimplifiedProject } from '@/types'; 
 
 export const metadata: Metadata = {
-  title: 'Portofoliu - PixelForge 3D',
+  title: 'Portofoliu - PrintDreamsIn3D',
   description: 'O selecție a celor mai bune proiecte de modelare 3D.',
 };
 
